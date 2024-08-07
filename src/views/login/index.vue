@@ -73,7 +73,7 @@
 
       <div style="position:relative">
         <div class="tips">
-          <span>{{ $t('login.username') }} : admin </span>
+          <span>{{ $t('login.username') }} : master </span>
           <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
         </div>
         <div class="tips">
@@ -139,8 +139,8 @@ export default class extends Vue {
   }
 
   private loginForm = {
-    username: 'admin',
-    password: 'password123'
+    username: 'master',
+    password: 'password@123'
   }
 
   private loginRules = {
