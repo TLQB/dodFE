@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
-import { getAcToken } from '@/utils/cookies'
+import { getAcToken, getRfToken } from '@/utils/cookies'
+import jwtDecode from 'jwt-decode'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -9,22 +10,38 @@ const service = axios.create({
   // withCredentials: true // send cookies when cross-domain requests
 })
 
-// Request interceptors
+let isRefreshing = false
+
 service.interceptors.request.use(
-  (config) => {
-    // Add X-Access-Token header to every request, you can add other custom headers here
-    console.log('UserModule.token', UserModule.token)
-    if (UserModule.token) {
-      // config.headers['X-Access-Token'] = UserModule.token
-      config.headers['Content-type'] = 'application/json'
+  async(config) => {
+    if (UserModule.token && !isRefreshing) {
+      const decodeToken: any = jwtDecode(UserModule.token)
+      const nowInSecs = Date.now() / 1000
+      const isExpiring = (decodeToken.exp - nowInSecs) < 60 // Refresh trước 60 giây
+
+      if (isExpiring && config.url !== '/admin/check/') {
+        isRefreshing = true
+        try {
+          const token: any = getRfToken()
+          await UserModule.CheckToken(token)
+          config.headers.Authorization = `Bearer ${getAcToken()}`
+        } catch (error) {
+          console.error('Token refresh failed:', error)
+          // Xử lý lỗi, có thể đăng xuất người dùng
+        } finally {
+          isRefreshing = false
+        }
+      } else if (config.url !== '/admin/check/') {
+        config.headers.Authorization = `Bearer ${getAcToken()}`
+      }
+
       config.headers.Authorization = `Bearer ${getAcToken()}`
     }
-    console.log(config)
+
+    config.headers['Content-type'] = 'application/json'
     return config
   },
-  (error) => {
-    Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 // Response interceptors
@@ -48,11 +65,11 @@ service.interceptors.response.use(
     }
 
     if (res.code !== 200) {
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
+      // Message({
+      //   message: res.message || 'Errors',
+      //   type: 'error',
+      //   duration: 5 * 1000
+      // })
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         MessageBox.confirm(
           '你已被登出，可以取消继续留在该页面，或者重新登录',
@@ -73,7 +90,24 @@ service.interceptors.response.use(
       return response.data
     }
   },
-  (error) => {
+  async(error) => {
+    const errCode = error.response.status
+    const config = error.config
+
+    if (errCode === 401) {
+      config._retry = true // handle refresh api
+      const token: any = getRfToken()
+      const newAccessToken = await UserModule.CheckToken(token)
+      if (newAccessToken) {
+        config.headers.Authorization = 'Bearer ' + newAccessToken
+        service(config)
+        return
+      } else {
+        // handle remove token in here
+        window.location.href = '/login'
+      }
+    }
+
     Message({
       message: error.message,
       type: 'error',

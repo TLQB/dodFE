@@ -1,6 +1,10 @@
 export default {
   route: {
     dashboard: 'Dashboard',
+    admin: 'Admin',
+    createAdmin: 'Create Admin',
+    editAdmin: 'Edit Admin',
+
     documentation: 'Documentation',
     guide: 'Guide',
     permission: 'Permission',

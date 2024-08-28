@@ -84,7 +84,7 @@
         width="120"
       >
         <template slot-scope="{row}">
-          <router-link :to="'/example/edit/'+row.id">
+          <router-link :to="'/example/edit/'+row.id ">
             <el-button
               type="primary"
               size="small"
