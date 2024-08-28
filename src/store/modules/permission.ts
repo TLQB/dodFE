@@ -49,7 +49,6 @@ class Permission extends VuexModule implements IPermissionState {
     // } else {
     //   accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
     // }
-    console.log(constantRoutes, 'contsan route')
     this.SET_ROUTES(constantRoutes)
   }
 }

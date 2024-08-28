@@ -49,7 +49,7 @@ export const register = (req: Request, res: Response) => {
 }
 
 export const login = (req: Request, res: Response) => {
-  console.log("hello ")
+  console.log('hello ')
   const { username } = req.body
   for (const user of userList) {
     if (user.username === username) {

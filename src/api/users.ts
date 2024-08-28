@@ -1,10 +1,17 @@
 import request from '@/utils/request'
 
-export const getUsers = (params: any) =>
+export const login = (data: any) =>
   request({
-    url: '/users',
-    method: 'get',
-    params
+    url: '/admins/login/',
+    method: 'post',
+    data
+  })
+
+export const checkToken = (data: any) =>
+  request({
+    url: '/admins/check/',
+    method: 'post',
+    data
   })
 
 export const getListAdmin = (params: any) =>
@@ -20,6 +27,28 @@ export const getDetailAdmin = (id: number) =>
     url: `/admins/${id}/`,
     method: 'get'
 
+  })
+
+export const updateAdmin = (id: number) =>
+  request({
+    url: `/admins/${id}/`,
+    method: 'patch'
+
+  })
+
+export const createAdmin = (data: any) =>
+  request({
+    url: '/admins/',
+    method: 'post',
+    data
+
+  })
+
+export const getUsers = (params: any) =>
+  request({
+    url: '/users',
+    method: 'get',
+    params
   })
 
 export const getUserByName = (username: string) =>
@@ -39,13 +68,6 @@ export const deleteUser = (username: string) =>
   request({
     url: `/users/${username}`,
     method: 'delete'
-  })
-
-export const login = (data: any) =>
-  request({
-    url: '/admins/login/',
-    method: 'post',
-    data
   })
 
 export const logout = () =>
