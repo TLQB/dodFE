@@ -119,7 +119,6 @@ class User extends VuexModule implements IUserState {
   @Action({ rawError: true })
   public async CheckToken(refreshToken: string) {
     const { data } = await checkToken({ refresh_token: refreshToken })
-    console.log(data.access_token, 'wwwwwwwwwwww')
     if (data.access_token) {
       setAcToken(data.access_token)
       return data.access_token
@@ -137,7 +136,7 @@ class User extends VuexModule implements IUserState {
     // if (this.token === '') {
     //   throw Error('LogOut: token is undefined!')
     // }
-    // removeToken()
+    removeRfToken()
     removeAcToken()
     resetRouter()
 

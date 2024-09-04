@@ -90,18 +90,18 @@ export const constantRoutes: RouteConfig[] = [
     ]
   },
   {
-    path: '/admin',
+    path: '/',
     component: Layout,
-    redirect: '/admin',
+    // redirect: '/admin',
     children: [
       {
-        path: '',
+        path: 'admin',
         component: () => import(/* webpackChunkName: "admins" */ '@/views/admins/index.vue'),
-        name: 'Admin',
+        name: 'AdminList',
         meta: { title: 'admin', icon: 'user', affix: true }
       },
       {
-        path: ':id(\\d+)',
+        path: 'admin/:id(\\d+)',
         component: () => import(/* webpackChunkName: "example-edit" */ '@/views/admins/edit.vue'),
         name: 'EditAdmin',
         meta: {
@@ -112,7 +112,7 @@ export const constantRoutes: RouteConfig[] = [
         }
       },
       {
-        path: 'create',
+        path: 'admin/create',
         component: () => import(/* webpackChunkName: "example-edit" */ '@/views/admins/create.vue'),
         name: 'CreateAdmin',
         meta: {
