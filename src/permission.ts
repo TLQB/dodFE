@@ -38,7 +38,7 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
       // console.log(UserModule)
       if (UserModule.roles.length === 0) {
         try {
-          console.log(UserModule)
+          // console.log(UserModule)
           // Note: roles must be a object array! such as: ['admin'] or ['developer', 'editor']
           // await UserModule.GetUserInfo()
           // console.log(UserModule)
@@ -70,7 +70,6 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
       next()
     } else {
       // Other pages that do not have permission to access are redirected to the login page.
-      console.log('::::::::::::::::::::')
       next(`/login?redirect=${to.path}`)
       NProgress.done()
     }

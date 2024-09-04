@@ -110,7 +110,7 @@ import { Route } from 'vue-router'
 import { Dictionary } from 'vue-router/types/router'
 import { Form as ElForm, Input } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
-import { isValidUsername } from '@/utils/validate'
+// import { isValidUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect/index.vue'
 import SocialSign from './components/SocialSignin.vue'
 
@@ -123,7 +123,7 @@ import SocialSign from './components/SocialSignin.vue'
 })
 export default class extends Vue {
   private validateUsername = (rule: any, value: string, callback: Function) => {
-    if (!isValidUsername(value)) {
+    if (value.trim() === '') {
       callback(new Error('Please enter the correct user name'))
     } else {
       callback()
@@ -139,12 +139,13 @@ export default class extends Vue {
   }
 
   private loginForm = {
-    username: 'master',
-    password: 'password@123'
+    username: '',
+    password: ''
   }
 
   private loginRules = {
     username: [{ validator: this.validateUsername, trigger: 'blur' }],
+
     password: [{ validator: this.validatePassword, trigger: 'blur' }]
   }
 
@@ -193,14 +194,28 @@ export default class extends Vue {
   private handleLogin() {
     (this.$refs.loginForm as ElForm).validate(async(valid: boolean) => {
       if (valid) {
-        this.loading = true
-        await UserModule.Login(this.loginForm)
-        this.$router.push({
-          path: this.redirect || '/',
-          query: this.otherQuery
-        }).catch(err => {
-          console.warn(err)
-        })
+        try {
+          this.loading = true
+          await UserModule.Login(this.loginForm)
+          this.$router.push({
+            path: this.redirect || '/',
+            query: this.otherQuery
+          }).catch(err => {
+            this.loading = false
+            this.$message({
+              message: err,
+              type: 'error',
+              duration: 5 * 1000
+            })
+          })
+        } catch (e) {
+          this.$message({
+            message: 'Incorrect username or password',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+
         // Just to simulate the time of the request
         setTimeout(() => {
           this.loading = false

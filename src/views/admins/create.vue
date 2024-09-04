@@ -2,6 +2,7 @@
   <div class="app-container">
     <el-card class="box-card">
       <el-form
+        v-loading="isLoading"
         ref="createForm"
         :model="createForm"
         :rules="rules"
@@ -17,9 +18,9 @@
         <el-form-item label="Password" prop="password">
           <el-input v-model="createForm.password" type="password"></el-input>
         </el-form-item>
-        <el-form-item>
+<!--         <el-form-item>
           <el-checkbox v-model="createForm.isMailauthCompleted">Is mailauth completed</el-checkbox>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-checkbox v-model="createForm.isSuper">Is super</el-checkbox>
         </el-form-item>
@@ -28,7 +29,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="danger" @click="handleCancel">Cancel</el-button>
-          <el-button :loading="isLoading" type="primary" @click="handleSubmit">Create</el-button>
+          <el-button type="primary" @click="handleSubmit">Create</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -81,23 +82,21 @@ export default class AdminCreate extends Vue {
       email: this.createForm.email.trim(),
       password: this.createForm.password.trim(),
       isSuper: this.createForm.isSuper,
-      isMailauthCompleted: this.createForm.isMailauthCompleted,
+      isMailauthCompleted: false,
       config: JSON.parse(this.createForm.config || '{}')
     }
 
     try {
       this.isLoading = true
       const response = await createAdmin(model)
-      const data = response.data
-      if (data) {
+      if (response) {
         this.$alert(this.$t('message.adminCreateSuccess') as string, '', {
           confirmButtonText: this.$t('text.ok') as string,
           type: 'success',
           center: true,
           callback: () => {
             this.$router.push({
-              name: 'EditAdmin',
-              params: { adminId: data.id.toString() }
+              name: 'AdminList'
             })
           }
         })

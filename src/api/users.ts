@@ -29,18 +29,22 @@ export const getDetailAdmin = (id: number) =>
 
   })
 
-export const updateAdmin = (id: number) =>
-  request({
-    url: `/admins/${id}/`,
-    method: 'patch'
-
-  })
+export const updateAdmin = (id: number, data: any) => {
+  return request.patch(`/admins/${id}/`, data)
+}
 
 export const createAdmin = (data: any) =>
   request({
     url: '/admins/',
     method: 'post',
     data
+
+  })
+
+export const deleteAdmin = (id: number) =>
+  request({
+    url: `/admins/${id}/`,
+    method: 'delete'
 
   })
 

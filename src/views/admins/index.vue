@@ -52,7 +52,7 @@
         align="center"
       >
         <template slot-scope="{row}">
-          <span>{{ row.is_mailauth_completed }}</span>
+          <span>{{ row.isMailauthCompleted }}</span>
         </template>
       </el-table-column>
 
@@ -62,7 +62,7 @@
         align="center"
       >
         <template slot-scope="{row}">
-          <span>{{ row.is_super }}</span>
+          <span>{{ row.isSuper }}</span>
         </template>
       </el-table-column>
 
@@ -88,6 +88,7 @@
             size="small"
             icon="el-icon-delete"
             class="el-button-delete"
+            @click="handleDelete(row.id)"
           >
             Delete
           </el-button>
@@ -108,8 +109,20 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { getListAdmin } from '@/api/users'
+import { getListAdmin, deleteAdmin } from '@/api/users'
 import Pagination from '@/components/Pagination/index.vue'
+import { camelizeKeys } from '@/utils/parse'
+
+interface AdminItem {
+  id: number
+  name: string
+  email: string
+  password: string
+  isMailauthCompleted: boolean
+  isEnabled: boolean
+  config: Record<string, any>
+  isSuper: boolean
+}
 
 @Component({
   name: 'AdminList',
@@ -118,12 +131,12 @@ import Pagination from '@/components/Pagination/index.vue'
   }
 })
 export default class extends Vue {
-  private list: any[] = []
+  private list: AdminItem[] = []
   private total = 0
   private listLoading = true
   private listQuery = {
-    page: 1,
-    limit: 20
+    current_page: 1,
+    per_page: 20
   }
 
   created() {
@@ -132,15 +145,49 @@ export default class extends Vue {
 
   private async getList() {
     this.listLoading = true
-    const response = await getListAdmin(this.listQuery)
-    const data = response.data
-
+    const response: any = await getListAdmin(this.listQuery)
+    const data: AdminItem[] = camelizeKeys(response.items)
     this.list = data
-    this.total = data.length // Giả sử total là độ dài của danh sách
-    // Just to simulate the time of the request
+    this.total = response.total
+    this.listQuery.current_page = response.current_page
     setTimeout(() => {
       this.listLoading = false
     }, 0.5 * 1000)
+  }
+
+  private handleDelete(id: number) {
+    if (id) {
+      this.$confirm('Are you sure you want to delete admin?', 'Confirm',
+        {
+          confirmButtonText: this.$tc('text.ok'),
+          cancelButtonText: this.$tc('text.cancel'),
+          type: 'warning'
+        })
+        .then(async() => {
+          try {
+            await deleteAdmin(id)
+            this.$alert(
+              this.$t('message.deleteAdminSuccess') as string,
+              '',
+              {
+                confirmButtonText: this.$t('text.ok') as string,
+                type: 'success',
+                center: true,
+                callback: () => {
+                  const index = this.list.findIndex(function(item) {
+                    return item.id === id
+                  })
+                  this.list.splice(index, 1)
+                  this.getList()
+                }
+              }
+            )
+          } catch {
+          }
+        }).catch(() => {
+          //
+        })
+    }
   }
 }
 </script>

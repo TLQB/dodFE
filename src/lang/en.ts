@@ -175,5 +175,14 @@ export default {
     showSidebarLogo: 'Sidebar Logo',
     fixedHeader: 'Fixed Header',
     sidebarTextTheme: 'Sidebar Text Theme'
+  },
+  message: {
+    adminCreateSuccess: 'Create admin successfully!',
+    deleteAdminSuccess: 'Remove admin successfully!',
+    adminUpdateSuccess: 'Update admin successfully!'
+  },
+  text: {
+    ok: 'Ok',
+    cancel: 'Cancel'
   }
 }
