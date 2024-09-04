@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Message, MessageBox } from 'element-ui'
+import { MessageBox } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
 import { getAcToken, getRfToken } from '@/utils/cookies'
 import jwtDecode from 'jwt-decode'
@@ -97,22 +97,25 @@ service.interceptors.response.use(
     if (errCode === 401) {
       config._retry = true // handle refresh api
       const token: any = getRfToken()
-      const newAccessToken = await UserModule.CheckToken(token)
-      if (newAccessToken) {
-        config.headers.Authorization = 'Bearer ' + newAccessToken
-        service(config)
-        return
-      } else {
-        // handle remove token in here
-        window.location.href = '/login'
+      if (token) {
+        const newAccessToken = await UserModule.CheckToken(token)
+        if (newAccessToken) {
+          config.headers.Authorization = 'Bearer ' + newAccessToken
+          service(config)
+          return
+        } else {
+          // handle remove token in here
+          window.location.href = '/login'
+          return
+        }
       }
     }
 
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
+    // Message({
+    //   message: error.message,
+    //   type: 'error',
+    //   duration: 5 * 1000
+    // })
     return Promise.reject(error)
   }
 )

@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div class="app-container">
     <el-card class="box-card">
       <el-form
@@ -14,21 +14,21 @@
         <el-form-item label="Email" prop="email">
           <el-input v-model="editForm.email"></el-input>
         </el-form-item>
-        <el-form-item label="Password" prop="password">
+<!--         <el-form-item label="Password" prop="password">
           <el-input v-model="editForm.password" type="password" placeholder="Leave blank to keep current password"></el-input>
+        </el-form-item> -->
+        <el-form-item>
+          <el-checkbox disabled v-model="editForm.isMailauthCompleted">Is mailauth completed</el-checkbox>
         </el-form-item>
         <el-form-item>
-          <el-checkbox v-model="editForm.isMailauthCompleted">Is mailauth completed</el-checkbox>
-        </el-form-item>
-        <el-form-item>
-          <el-checkbox v-model="editForm.isMaster">Is super</el-checkbox>
+          <el-checkbox v-model="editForm.isSuper">Is super</el-checkbox>
         </el-form-item>
         <el-form-item label="Config">
           <el-input class="el_input_textarea" type="textarea" v-model="editForm.config"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="danger" @click="handleCancel" :disabled="isLoading">Cancel</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="isLoading">Update</el-button>
+          <el-button type="primary" @click="handleUpdate" :loading="isLoading">Update</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -38,7 +38,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { getDetailAdmin, updateAdmin } from '@/api/users'
-import { IUpdateAdminRequest } from '@/api/types/admin'
+// import { ICreateAdminRequest } from '@/api/types/admin'
 
 @Component({
   name: 'EditAdmin'
@@ -47,8 +47,7 @@ export default class EditAdmin extends Vue {
   private editForm = {
     name: '',
     email: '',
-    password: '',
-    isMaster: false,
+    isSuper: false,
     isMailauthCompleted: false,
     config: ''
   }
@@ -68,15 +67,14 @@ export default class EditAdmin extends Vue {
   }
 
   private async fetchAdminData() {
-    const adminId: number = parseInt(this.$route.params.adminId, 10);
+    const adminId: number = parseInt(this.$route.params.id, 10)
     this.isLoading = true
     try {
-      const { data } = await getDetailAdmin(adminId)
+      const data: any = await getDetailAdmin(adminId)
       this.editForm = {
         name: data.name,
         email: data.email,
-        password: '',
-        isMaster: data.is_master,
+        isSuper: data.is_super,
         isMailauthCompleted: data.is_mailauth_completed,
         config: JSON.stringify(data.config)
       }
@@ -98,7 +96,7 @@ export default class EditAdmin extends Vue {
     }
   }
 
-  private async handleSubmit() {
+  private async handleUpdate() {
     try {
       await (this.$refs.editForm as any).validate()
     } catch (error) {
@@ -108,29 +106,25 @@ export default class EditAdmin extends Vue {
 
     this.isLoading = true
 
-    const model: IUpdateAdminRequest = {
+    const model: any = {
       name: this.editForm.name.trim(),
       email: this.editForm.email.trim(),
-      is_master: this.editForm.isMaster,
+      is_super: this.editForm.isSuper,
       is_mailauth_completed: this.editForm.isMailauthCompleted,
       config: JSON.parse(this.editForm.config || '{}')
     }
 
-    if (this.editForm.password) {
-      model.password = this.editForm.password.trim()
-    }
-
     try {
-      const adminId = this.$route.params.adminId
+      const adminId: number = parseInt(this.$route.params.id, 10)
       const response = await updateAdmin(adminId, model)
-      if (response && response.data) {
+      if (response) {
         this.$message({
           message: this.$t('message.adminUpdateSuccess') as string,
           type: 'success',
           duration: 5000
         })
 
-        this.fetchAdminData() // Refresh the data
+        this.$router.push({ name: 'AdminList' })
       } else {
         throw new Error('No data received from server')
       }
@@ -155,4 +149,4 @@ export default class EditAdmin extends Vue {
     width: 50%;
   }
 }
-</style> -->
+</style>
