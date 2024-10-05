@@ -1,101 +1,103 @@
 <template>
   <div class="app-container">
-    <router-link :to="{name: 'CreateAdmin'}">
-      <el-button
-        type="primary"
-        icon="el-icon-edit"
+    <div class="button-container">
+      <router-link :to="{name: 'CreateAdmin'}">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+        >
+          Add
+        </el-button>
+      </router-link>
+    </div>
+    <div class="table-container">
+      <el-table
+        v-loading="listLoading"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%"
       >
-        Add
-      </el-button>
-    </router-link>
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-    >
-      <el-table-column
-        width="80"
-        align="center"
-        label="ID"
-      >
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column
+          align="center"
+          label="ID"
+          min-width="40"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.id }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column
-        width="180"
-        align="center"
-        label="Name"
-      >
-        <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column
+          align="center"
+          label="Name"
+          min-width="150"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.name }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column
-        width="260"
-        align="center"
-        label="Email"
-      >
-        <template slot-scope="{row}">
-          <span>{{ row.email }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column
+          align="center"
+          label="Email"
+          min-width="200"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.email }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column
-        width="180"
-        label="is mailauth completed"
-        align="center"
-      >
-        <template slot-scope="{row}">
-          <span>{{ row.isMailauthCompleted }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column
+          align="center"
+          label="is mailauth completed"
+          min-width="150"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.isMailauthCompleted }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column
-        width="105"
-        label="is super"
-        align="center"
-      >
-        <template slot-scope="{row}">
-          <span>{{ row.isSuper }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column
+          align="center"
+          label="is super"
+          min-width="80"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.isSuper }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column
-        align="center"
-        label="Actions"
-        width="240"
-      >
-        <template slot-scope="{row}">
-          <router-link :to="'/admin/'+row.id + '/'">
+        <el-table-column
+          align="center"
+          label="Actions"
+          min-width="150"
+        >
+          <template slot-scope="{row}">
+            <router-link :to="'/admin/'+row.id + '/'">
+              <el-button
+                type="primary"
+                size="small"
+                icon="el-icon-edit"
+              >
+                Detail
+              </el-button>
+            </router-link>
+
             <el-button
-              type="primary"
+              type="danger"
               size="small"
-              icon="el-icon-edit"
+              icon="el-icon-delete"
+              class="el-button-delete"
+              @click="handleDelete(row.id)"
             >
-              Detail
+              Delete
             </el-button>
-
-          </router-link>
-
-          <el-button
-            type="danger"
-            size="small"
-            icon="el-icon-delete"
-            class="el-button-delete"
-            @click="handleDelete(row.id)"
-          >
-            Delete
-          </el-button>
-
-        </template>
-      </el-table-column>
-    </el-table>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
     <pagination
       v-show="total>0"
@@ -194,11 +196,44 @@ export default class extends Vue {
 
 <style lang="scss" scoped>
 .app-container {
-  .el-table {
-    margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+
+  .button-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
   }
-  .el-button-delete{
-    margin-left: 10px;
+
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .el-table {
+    width: 100%;
+  }
+
+  .el-button-delete {
+    margin-left: 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+
+    .el-table {
+      font-size: 14px;
+    }
+
+    .el-button {
+      font-size: 12px;
+    }
   }
 }
 </style>

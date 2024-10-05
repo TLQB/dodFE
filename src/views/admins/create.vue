@@ -7,7 +7,8 @@
         :model="createForm"
         :rules="rules"
         class="form-container"
-        label-width="100px"
+        :label-position="isDesktop ? 'left' : 'top'"
+        :label-width="isDesktop ? '120px' : 'auto'"
       >
         <el-form-item label="Name" prop="name">
           <el-input v-model="createForm.name"></el-input>
@@ -18,18 +19,15 @@
         <el-form-item label="Password" prop="password">
           <el-input v-model="createForm.password" type="password"></el-input>
         </el-form-item>
-<!--         <el-form-item>
-          <el-checkbox v-model="createForm.isMailauthCompleted">Is mailauth completed</el-checkbox>
-        </el-form-item> -->
-        <el-form-item>
+        <el-form-item label=" ">
           <el-checkbox v-model="createForm.isSuper">Is super</el-checkbox>
         </el-form-item>
         <el-form-item label="Config">
-          <el-input class="el_input_textarea" type="textarea" v-model="createForm.config"></el-input>
+          <el-input type="textarea" v-model="createForm.config" :rows="4"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-button type="danger" @click="handleCancel">Cancel</el-button>
-          <el-button type="primary" @click="handleSubmit">Create</el-button>
+        <el-form-item class="button-container">
+          <el-button type="danger" @click="handleCancel" :disabled="isLoading">Cancel</el-button>
+          <el-button type="primary" @click="handleSubmit" :loading="isLoading">Create</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -64,6 +62,20 @@ export default class AdminCreate extends Vue {
   }
 
   private isLoading = false
+  private isDesktop = true
+
+  created() {
+    this.checkScreenSize()
+    window.addEventListener('resize', this.checkScreenSize)
+  }
+
+  destroyed() {
+    window.removeEventListener('resize', this.checkScreenSize)
+  }
+
+  private checkScreenSize() {
+    this.isDesktop = window.innerWidth > 768
+  }
 
   private handleCancel() {
     this.$router.push({ name: 'AdminList' }) // Assuming you have a route named 'AdminList'
@@ -115,9 +127,100 @@ export default class AdminCreate extends Vue {
 
 <style lang="scss" scoped>
 .app-container {
+  padding: 20px;
+}
+
+.box-card {
+  width: 100%;
+}
+
+.form-container {
+  .el-form-item {
+    margin-bottom: 22px;
+  }
+
   .el-input,
-  .el_input_textarea {
-    width: 50%;
+  .el-textarea {
+    width: 100%;
+  }
+
+  .el-checkbox {
+    margin-left: 0;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: flex-start;
+
+    .el-button {
+      margin-right: 10px;
+    }
+  }
+}
+
+@media (min-width: 4000px) {
+  .form-container {
+    .el-form-item {
+      display: flex;
+      align-items: flex-start;
+
+      .el-form-item__label {
+        flex: 0 0 120px;
+        padding-top: 11px; // Để căn chỉnh label với input
+      }
+
+      .el-form-item__content {
+        flex: 1;
+        max-width: none; // Loại bỏ giới hạn chiều rộng
+      }
+
+      .el-input,
+      .el-textarea {
+        width: 100%;
+      }
+    }
+
+    .button-container {
+      padding-left: 120px; // Thay vì margin-left
+      box-sizing: border-box;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+  }
+
+  .box-card {
+    padding: 15px;
+  }
+
+  .form-container {
+    .el-form-item {
+      margin-bottom: 15px;
+    }
+
+    .el-form-item__label {
+      float: none;
+      display: block;
+      text-align: left;
+      padding: 0 0 10px;
+      width: 100% !important;
+    }
+
+    .el-form-item__content {
+      margin-left: 0 !important;
+    }
+
+    .el-input,
+    .el-textarea {
+      width: 100%;
+    }
+
+    .button-container {
+      padding-left: 0;
+    }
   }
 }
 </style>
